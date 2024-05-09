@@ -148,9 +148,11 @@ if __name__ == "__main__":
     torch.backends.cudnn.benchmark = True
 
     Logger.setup_logger(
-        None, opt["path"]["log"], "train", level=logging.INFO, screen=True
+        None, opt["path"]["log"], "val", level=logging.INFO, screen=True
     )
-    Logger.setup_logger("val", opt["path"]["log"], "val", level=logging.INFO)
+    # Logger.setup_logger(
+    #     "val", opt["path"]["log"], "val", level=logging.INFO, screen=True
+    # )
     logger = logging.getLogger("base")
     logger.info(Logger.dict2str(opt))
     # tb_logger = SummaryWriter(log_dir=opt['path']['tb_logger'])
@@ -282,7 +284,7 @@ if __name__ == "__main__":
         avg_ssim2 += ssim2
         avg_infer_time += delta_t
 
-        print(
+        logger.info(
             f"psnr: {psnr}, ssim:{ssim}, save to {'{}/{}_{}_sr_process.png'.format(result_path, current_step, idx)}"
         )
 
@@ -305,7 +307,7 @@ if __name__ == "__main__":
     with open(str(Path(fig_path, "ssim_metric.json")), "w") as f:
         json.dump(ssim_metric_dict, f)
 
-    print(
+    logger.info(
         f"avg_psnr: {avg_psnr}, avg_ssim: {avg_ssim}, avg_psnr2: {avg_psnr2}, avg_ssim: {avg_ssim2}, avg_infer_time: {avg_infer_time}"
     )
 
