@@ -81,7 +81,7 @@ class GaussianDiffusion(nn.Module):
         super().__init__()
         self.channels = channels
         self.image_size = image_size
-        self.denoise_fn = denoise_fn
+        self.denoise_fn = denoise_fn  ## U-Net
         self.loss_type = loss_type
         self.conditional = conditional
         if schedule_opt is not None:
@@ -392,12 +392,14 @@ class GaussianDiffusion(nn.Module):
         )
 
     def p_losses(self, x_in, noise=None):
-        x_start = x_in["HR"]
+        x_start = x_in["HR"]  ## GT image
 
-        x_sr = x_in["SR"]
+        x_sr = x_in["SR"]  ## hazy image
 
         [b, c, h, w] = x_start.shape
+
         t = np.random.randint(1, self.num_timesteps + 1)
+
         continuous_sqrt_alpha_cumprod = torch.FloatTensor(
             np.random.uniform(
                 self.sqrt_alphas_cumprod_prev[t - 1],

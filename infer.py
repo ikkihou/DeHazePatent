@@ -119,7 +119,7 @@ if __name__ == "__main__":
         "-c",
         "--config",
         type=str,
-        default="config/framework_da.json",
+        default="config/framework_val.json",
         help="JSON file for configuration",
     )
     parser.add_argument(
