@@ -47,15 +47,15 @@ class LRHRDataset(Dataset):
         )
         self.real_hr_path = (
             other_params["hr_path"] if "hr_path" in other_params.keys() else None
-        )
+        )  ## high resolution path
 
         # rt daRESIDE_img_syntheic
         self.rt_da = (
             other_params["HazeAug"] if "HazeAug" in other_params.keys() else None
         )
         if self.rt_da:
-            self.rt_da_ref = other_params["rt_da_ref"]
-            self.ref_imgs = []
+            self.rt_da_ref = other_params["rt_da_ref"]  ## raw haze image dir
+            self.ref_imgs = []  ## raw hazy image paths
             for dir in self.rt_da_ref:
                 self.ref_imgs += [os.path.join(dir, i) for i in os.listdir(dir)]
             self.depth_path = other_params["depth_img_path"]
@@ -103,6 +103,7 @@ class LRHRDataset(Dataset):
 
             if self.rt_da:
 
+                ## HazeAug Image
                 img_SR = rt_haze_enhancement(
                     self.sr_path[index],
                     os.path.join(
@@ -125,7 +126,7 @@ class LRHRDataset(Dataset):
             img_HR = Image.open(hr_path).convert("RGB")
             img_HR = img_HR.resize((self.r_res, self.r_res))
 
-            if self.need_LR:
+            if self.need_LR:  ## train model: false,  val mode: true
                 img_LR = img_SR
 
         ## NOTE:should be focused

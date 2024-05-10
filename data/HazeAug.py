@@ -57,15 +57,13 @@ class MyGaussianBlur(ImageFilter.Filter):
 
 
 def rt_haze_enhancement(pil_img, depth_path, ref_path):
-    # print(f"pil image:{pil_img}")
-    # print(f"depth image:{depth_path}")
-    # print(f"ref image:{ref_path}")
+
     # add_haze
-    A = np.random.rand() * 1.3 + 0.5
-    beta = 2 * np.random.rand() + 0.8
-    color_strategy = np.random.rand()
+    A = np.random.rand() * 1.3 + 0.5  ## 0.5-1.8
+    beta = 2 * np.random.rand() + 0.8  ## 0.8-2.8
+    color_strategy = np.random.rand()  ## 0-1
     if color_strategy <= 0.5:
-        strategy = "colour_cast"
+        strategy = "colour_cast"  ## haze migration
     #     elif 0.3 < color_strategy <= 0.6:
     #         strategy = 'luminance'
     else:
@@ -82,7 +80,7 @@ def rt_haze_enhancement(pil_img, depth_path, ref_path):
     td_bk = np.exp(-np.array(depth) * beta)
     td_bk = np.expand_dims(td_bk, axis=-1).repeat(3, axis=-1)
 
-    assert img_f.shape == td_bk.shape, print(f"{pil_img}\n{depth_path}")
+    # assert img_f.shape == td_bk.shape, print(f"{pil_img}\n{depth_path}")
 
     img_bk = np.array(img_f) * td_bk + A * (1 - td_bk)
 

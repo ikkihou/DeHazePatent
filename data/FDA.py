@@ -1,11 +1,13 @@
 import os
 
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 import numpy as np
 from PIL import Image
+
 # from FDA_utils import FDA_source_to_target_np
 import cv2
 import scipy.misc
+
 # from matplotlib import image
 import torch
 import numpy as np
@@ -23,9 +25,11 @@ def low_freq_mutate(amp_src, amp_trg, L=0.1):
     _, _, h, w = amp_src.size()
     b = (np.floor(np.amin((h, w)) * L)).astype(int)  # get b
     amp_src[:, :, 0:b, 0:b] = amp_trg[:, :, 0:b, 0:b]  # top left
-    amp_src[:, :, 0:b, w - b:w] = amp_trg[:, :, 0:b, w - b:w]  # top right
-    amp_src[:, :, h - b:h, 0:b] = amp_trg[:, :, h - b:h, 0:b]  # bottom left
-    amp_src[:, :, h - b:h, w - b:w] = amp_trg[:, :, h - b:h, w - b:w]  # bottom right
+    amp_src[:, :, 0:b, w - b : w] = amp_trg[:, :, 0:b, w - b : w]  # top right
+    amp_src[:, :, h - b : h, 0:b] = amp_trg[:, :, h - b : h, 0:b]  # bottom left
+    amp_src[:, :, h - b : h, w - b : w] = amp_trg[
+        :, :, h - b : h, w - b : w
+    ]  # bottom right
     return amp_src
 
 
@@ -70,7 +74,9 @@ def FDA_source_to_target(src_img, trg_img, L=0.1):
 
     # get the recomposed image: source content, target style
     _, _, imgH, imgW = src_img.size()
-    src_in_trg = torch.irfft(fft_src_, signal_ndim=2, onesided=False, signal_sizes=[imgH, imgW])
+    src_in_trg = torch.irfft(
+        fft_src_, signal_ndim=2, onesided=False, signal_sizes=[imgH, imgW]
+    )
 
     return src_in_trg
 
@@ -106,7 +112,7 @@ def FDA_source_to_target_np(src_img, trg_img, L=0.1):
 def trans_image_by_ref(in_path, ref_path, value=0.002):
     # im_src = Image.open(in_path).convert('RGB')
     im_src = in_path
-    im_trg = Image.open(ref_path).convert('RGB')
+    im_trg = Image.open(ref_path).convert("RGB")
     src_h, src_w, src_c = np.shape(im_src)
 
     im_src = im_src.resize((1024, 512), Image.BICUBIC)
@@ -125,7 +131,11 @@ def trans_image_by_ref(in_path, ref_path, value=0.002):
     # recover to src size
     src_in_trg = cv2.resize(src_in_trg, (src_w, src_h))
 
-    src_in_trg = (src_in_trg - np.min(src_in_trg)) / (np.max(src_in_trg) - np.min(src_in_trg)) * 255
+    src_in_trg = (
+        (src_in_trg - np.min(src_in_trg))
+        / (np.max(src_in_trg) - np.min(src_in_trg))
+        * 255
+    )
 
     # scipy.misc.toimage(src_in_trg, cmin=0.0, cmax=255.0).save('src_in_tar.png')
     # image.imsave('src_in_tar.png',src_in_trg)  # cmap常用于改变绘制风格，如黑白gray，翠绿色virdidis
